@@ -77,12 +77,67 @@
 # Use `Model.destroy_all` code.
 # TODO!
 
+Role.destroy_all
+Movie.destroy_all
+Actor.destroy_all
+Studio.destroy_all
+
 # Generate models and tables, according to the domain model.
 # TODO!
+
+# Execute below on terminal:
+# rails generate model Studio name:string
+# rails generate model Movie title:string year_released:integer rated:string studio:references
+# rails generate model Actor name:string
+# rails generate model Role movie:references actor:references character_name:string
+# rails db:migrate
 
 # Insert data into the database that reflects the sample data shown above.
 # Do not use hard-coded foreign key IDs.
 # TODO!
+
+##I use function find_or_create_by instead of save - hope it't okay!
+# Find or create the studio
+studio_warner_bros = Studio.find_or_create_by(name: 'Warner Bros.')
+
+# Create movies
+batman_begins = Movie.find_or_create_by(title: 'Batman Begins', year_released: 2005, rated: 'PG-13', studio: studio_warner_bros)
+the_dark_knight = Movie.find_or_create_by(title: 'The Dark Knight', year_released: 2008, rated: 'PG-13', studio: studio_warner_bros)
+the_dark_knight_rises = Movie.find_or_create_by(title: 'The Dark Knight Rises', year_released: 2012, rated: 'PG-13', studio: studio_warner_bros)
+
+# Create actors
+christian_bale = Actor.find_or_create_by(name: 'Christian Bale')
+michael_caine = Actor.find_or_create_by(name: 'Michael Caine')
+liam_neeson = Actor.find_or_create_by(name: 'Liam Neeson')
+katie_holmes = Actor.find_or_create_by(name: 'Katie Holmes')
+gary_oldman = Actor.find_or_create_by(name: 'Gary Oldman')
+heath_ledger = Actor.find_or_create_by(name: 'Heath Ledger')
+aaron_eckhart = Actor.find_or_create_by(name: 'Aaron Eckhart')
+maggie_gyllenhaal = Actor.find_or_create_by(name: 'Maggie Gyllenhaal')
+tom_hardy = Actor.find_or_create_by(name: 'Tom Hardy')
+joseph_gordon_levitt = Actor.find_or_create_by(name: 'Joseph Gordon-Levitt')
+anne_hathaway = Actor.find_or_create_by(name: 'Anne Hathaway')
+
+# Assign roles to movies
+Role.find_or_create_by(movie: batman_begins, actor: christian_bale, character_name: 'Bruce Wayne')
+Role.find_or_create_by(movie: batman_begins, actor: michael_caine, character_name: 'Alfred')
+Role.find_or_create_by(movie: batman_begins, actor: liam_neeson, character_name: "Ra's Al Ghul")
+Role.find_or_create_by(movie: batman_begins, actor: katie_holmes, character_name: 'Rachel Dawes')
+Role.find_or_create_by(movie: batman_begins, actor: gary_oldman, character_name: 'Commissioner Gordon')
+
+Role.find_or_create_by(movie: the_dark_knight, actor: christian_bale, character_name: 'Bruce Wayne')
+Role.find_or_create_by(movie: the_dark_knight, actor: heath_ledger, character_name: 'Joker')
+Role.find_or_create_by(movie: the_dark_knight, actor: aaron_eckhart, character_name: 'Harvey Dent')
+Role.find_or_create_by(movie: the_dark_knight, actor: michael_caine, character_name: 'Alfred')
+Role.find_or_create_by(movie: the_dark_knight, actor: maggie_gyllenhaal, character_name: 'Rachel Dawes')
+
+Role.find_or_create_by(movie: the_dark_knight_rises, actor: christian_bale, character_name: 'Bruce Wayne')
+Role.find_or_create_by(movie: the_dark_knight_rises, actor: gary_oldman, character_name: 'Commissioner Gordon')
+Role.find_or_create_by(movie: the_dark_knight_rises, actor: tom_hardy, character_name: 'Bane')
+Role.find_or_create_by(movie: the_dark_knight_rises, actor: joseph_gordon_levitt, character_name: 'John Blake')
+Role.find_or_create_by(movie: the_dark_knight_rises, actor: anne_hathaway, character_name: 'Selina Kyle')
+
+
 
 # Prints a header for the movies output
 puts "Movies"
@@ -91,6 +146,10 @@ puts ""
 
 # Query the movies data and loop through the results to display the movies output.
 # TODO!
+movies = Movie.includes(:studio).all
+movies.each do |movie|
+  puts "#{movie.title.ljust(25)} #{movie.year_released.to_s.ljust(15)} #{movie.rated.ljust(10)} #{movie.studio.name}"
+end
 
 # Prints a header for the cast output
 puts ""
@@ -100,3 +159,7 @@ puts ""
 
 # Query the cast data and loop through the results to display the cast output for each movie.
 # TODO!
+roles = Role.includes(:movie, :actor).all
+roles.each do |role|
+  puts "#{role.movie.title.ljust(25)} #{role.actor.name.ljust(20)} #{role.character_name}"
+end
